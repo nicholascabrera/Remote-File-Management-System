@@ -1,6 +1,8 @@
 # Remote-File-Management-System
 Project Idea: Remote File Management System using Command Pattern
+
 Objective:
+
 Develop a Remote File Management System that allows users to perform various file operations (like create, delete, move, copy) on a remote server, using the Command design pattern. The aim is to enable the execution of different file operations in a way that the operations can be encapsulated as objects, allowing for flexible and extensible command execution, undo operations, and logging.
 
 ## Tasks
