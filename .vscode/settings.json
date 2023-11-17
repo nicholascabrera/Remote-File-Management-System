@@ -1,0 +1,7 @@
+{
+    "java.project.sourcePaths": [
+        "remote-file-management-system/src",
+        "remote-file-management-system/src/main/java/com/startech"
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
+}
