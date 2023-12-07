@@ -56,9 +56,12 @@ public class Invoker implements ActionListener{
                     //in the case of undo, i simply do not want to go through the headache that is undoing an undo.
                     break;
             }
+        }  else if(e.getActionCommand() == "undo" && commandHistory.size() == 0) {
+            System.out.println("There are no commands to undo!");
+            return;
         }
 
-        if(command.getEnum() != CommandE.UNDO){commandHistory.add(command);}
+        if(e.getActionCommand() != "undo"){commandHistory.add(command);}
         Executor executor = new Executor(command);
         executor.execute();
     }
