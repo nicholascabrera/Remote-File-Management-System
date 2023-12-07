@@ -11,6 +11,7 @@ public class Invoker implements ActionListener{
 
     public Invoker(){
         factory = new CommandFactory();
+        commandHistory = new Stack<>();
     }
 
     @Override
@@ -27,11 +28,37 @@ public class Invoker implements ActionListener{
             command = factory.getCommand(CommandE.DELETE);
         } else if(e.getActionCommand() == "move"){
             command = factory.getCommand(CommandE.MOVE);
-        } else if(e.getActionCommand() == "undo"){
-            command = factory.getCommand(CommandE.UNDO);
+        } else if(e.getActionCommand() == "undo" && commandHistory.size() > 0){
+            Command lastCommand = commandHistory.pop();
+            switch(lastCommand.getEnum()){
+                case CREATE:
+                    command = factory.getCommand(CommandE.DELETE);
+                    //set parameters somehow, work with melodie.
+                    break;
+                case DELETE:
+                    command = factory.getCommand(CommandE.CREATE);
+                    //set parameters somehow, work with melodie.
+                    break;
+                case MOVE:
+                    command = factory.getCommand(CommandE.MOVE);
+                    //set the new destination to the old source, and the new source to the old destination.
+                    //set parameters somehow, work with melodie.
+                    break;
+                case PASTE:
+                    command = factory.getCommand(CommandE.PASTE);
+                    //in order to undo a paste, the file must be deleted and created at its original source. the best way to do this
+                        // is with another paste command.
+                    //set parameters somehow, work with melodie.
+                    break;
+                default:
+                    //in the case of copy, no action is necessary as nothing actually happens, only prepares for a paste command.
+                        //paste deletes the file at its original destination, and creates it again at the new destination.
+                    //in the case of undo, i simply do not want to go through the headache that is undoing an undo.
+                    break;
+            }
         }
 
-        commandHistory.add(command);
+        if(command.getEnum() != CommandE.UNDO){commandHistory.add(command);}
         Executor executor = new Executor(command);
         executor.execute();
     }
