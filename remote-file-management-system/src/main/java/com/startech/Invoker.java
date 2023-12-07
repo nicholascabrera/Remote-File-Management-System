@@ -16,7 +16,7 @@ public class Invoker implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Command command = new Command();
+        Command command = new Copy("null", "null");     //placeholder instantiation
 
         if(e.getActionCommand() == "copy"){
             command = factory.getCommand(CommandE.COPY);

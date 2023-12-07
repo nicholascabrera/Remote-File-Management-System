@@ -8,7 +8,8 @@ public class CommandFactory {
     }
 
     public Command getCommand(CommandE commandEnum){
-        return new Command(commandEnum);   //placeholder code so it doesn't error out
+        System.out.println(commandEnum + " COMMAND EXECUTED");
+        return new Create("blah");   //placeholder code so it doesn't error out
     }
 
     // public Object get(){
