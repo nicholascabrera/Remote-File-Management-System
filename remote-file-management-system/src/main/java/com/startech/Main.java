@@ -3,8 +3,7 @@ package com.startech;
 import java.awt.event.ActionEvent;
 
 /**
- * Hello world!
- *
+ * This is the main class.
  */
 public class Main {
     public static void main( String[] args )
