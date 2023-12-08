@@ -76,5 +76,51 @@ public class Main {
         // moveCommand.execute();
 
         // scanner.close();
+
+        // Scanner scanner = new Scanner(System.in);
+
+        // /*  create command : The user is asked to enter a file name to create. 
+        // The CommandFactory is used to create a Create command with the file name that was entered and execute it. */
+        // System.out.println("Enter the file name to create:");
+        // String createFileName = scanner.nextLine();
+        // Command createCommand = new CommandFactory().createCommand("create", new String[]{createFileName});
+        // createCommand.execute();
+
+        // /*copy command: The user is asked to enter the source file name and the destination file name for copying. 
+        // The CommandFactory is used to create a Copy command with the file names entered and execute it. */
+        // System.out.println("Enter the source file name to copy:");
+        // String copySourceFileName = scanner.nextLine();
+        // System.out.println("Enter the destination file name for copying:");
+        // String copyDestFileName = scanner.nextLine();
+        // Command copyCommand = new CommandFactory().createCommand("copy", new String[]{copySourceFileName, copyDestFileName});
+        // copyCommand.execute();
+
+        // /* delete command : The user is asked to enter a file name to delete. 
+        // The CommandFactory is used to create a Delete command with the file name entered and execute it. */
+        // System.out.println("Enter the file name to delete:");
+        // String deleteFileName = scanner.nextLine();
+        // Command deleteCommand = new CommandFactory().createCommand("delete", new String[]{deleteFileName});
+        // deleteCommand.execute();
+
+        // /*  move command:  The user is asked to enter the source file name and the destination file name for moving. 
+        // The CommandFactory is used to create a Move command with the file names entered and execute it.*/
+        // System.out.println("Enter the file name to move:");
+        // String moveFileName = scanner.nextLine();
+        // System.out.println("Enter the destination file name for moving:");
+        // String moveDestFileName = scanner.nextLine();
+        // Command moveCommand = new CommandFactory().createCommand("move", new String[]{moveFileName, moveDestFileName});
+        // moveCommand.execute();
+
+        // /*paste command : The user is prompted to enter the source file name and the destination file name for pasting. 
+        // The CommandFactory is used to create a Paste command with the file names entered and execute it.*/
+
+        // System.out.println("Enter the source file name to paste:");
+        // String pasteSourceFileName = scanner.nextLine();
+        // System.out.println("Enter the destination file name for pasting:");
+        // String pasteDestFileName = scanner.nextLine();
+        // Command pasteCommand = new CommandFactory().createCommand("paste", new String[]{pasteSourceFileName, pasteDestFileName});
+        // pasteCommand.execute();
+
+        // scanner.close();
     }
 }

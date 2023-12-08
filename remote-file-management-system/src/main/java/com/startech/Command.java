@@ -16,7 +16,7 @@ abstract class Command {
         this.fileName = fileName;
     }
 
-    public abstract CommandE getEnum();
+    abstract CommandE getEnum();
 
     public String getFileName() { // Getter method for the fileName variable
         return fileName;
@@ -40,8 +40,16 @@ abstract class Command {
 class Create extends Command {
     private final CommandE commandEnum = CommandE.CREATE;
 
-    public Create(String fileName) { // Constructor to call the parent class constructor and initialize the fileName variable
-        super(fileName);
+    public Create(String[] arguments) { // Constructor to call the parent class constructor and initialize the fileName variable
+        super(arguments[0]);    //the first element of the arguments array will be the fileName or the source file.
+        if(arguments.length != 1){
+            try {
+                throw new Exception("Not the correct number of arguments! Create only takes one argument: the file name!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
     }
 
     public CommandE getEnum() {
@@ -64,9 +72,17 @@ class Copy extends Command {
     private final CommandE commandEnum = CommandE.COPY;
     private String destination; // Variable to store the destination file name
 
-    public Copy(String source, String destination) { // Constructor to call the parent class constructor and initialize the source and destination variables
-        super(source);
-        this.destination = destination;
+    public Copy(String[] arguments) { // Constructor to call the parent class constructor and initialize the source and destination variables
+        super(arguments[0]);
+        if(arguments.length != 2){
+            try {
+                throw new Exception("Not the correct number of arguments! Copy takes two arguments: the source file name and the destination!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
+        this.destination = arguments[1];
     }
 
     public CommandE getEnum() {
@@ -90,8 +106,16 @@ class Copy extends Command {
 class Delete extends Command {
     private final CommandE commandEnum = CommandE.DELETE;
 
-    public Delete(String fileName) { // Constructor to call the parent class constructor and initialize the fileName variable
-        super(fileName);
+    public Delete(String[] arguments) { // Constructor to call the parent class constructor and initialize the fileName variable
+        super(arguments[0]);
+        if(arguments.length != 1){
+            try {
+                throw new Exception("Not the correct number of arguments! Delete only takes one argument: the file name!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
     }
 
     public CommandE getEnum() {
@@ -118,14 +142,27 @@ class Delete extends Command {
 // Child class representing the Paste operation
 class Paste extends Command {
     private final CommandE commandEnum = CommandE.PASTE;
+    private String destination; // Variable to store the destination file name
 
-    public Paste(String sourceFile, String destinationFile) { // Constructor to call the parent class constructor and initialize the sourceFile and destinationFile variables
-        super(sourceFile);
-        this.fileName = destinationFile;
+    public Paste(String[] arguments) { // Constructor to call the parent class constructor and initialize the sourceFile and destinationFile variables
+        super(arguments[0]);
+        if(arguments.length != 2){
+            try {
+                throw new Exception("Not the correct number of arguments! Paste takes two arguments: the source file name and the destination!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
+        this.destination = arguments[1];
     }
 
     public CommandE getEnum() {
         return commandEnum;
+    }
+
+    public String getDestination() {
+        return destination;
     }
 
     // Implementation of performOperation method for Paste class
@@ -137,7 +174,7 @@ class Paste extends Command {
         if (source.exists()) { // Check if the source file exists
             try {
                 Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING); // Copy the source file to the destination folder using the copy() method of the Files class
-                System.out.println("File pasted to:\t" + fileName); // Print a success message
+                System.out.println("File pasted to:\t" + this.destination); // Print a success message
             } catch (IOException e) {
                 System.out.println("An error occurred while copying the file."); // Print an error message if an IOException occurs during the copy operation
             }
@@ -152,9 +189,17 @@ class Move extends Command {
     private String destination; // Variable to store the destination file name
     private final CommandE commandEnum = CommandE.MOVE;
 
-    public Move(String source, String destination) { // Constructor to call the parent class constructor and initialize the source and destination variables
-        super(source);
-        this.destination = destination;
+    public Move(String[] arguments) { // Constructor to call the parent class constructor and initialize the source and destination variables
+        super(arguments[0]);
+        if(arguments.length != 2){
+            try {
+                throw new Exception("Not the correct number of arguments! Move takes two arguments: the source file name and the destination!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
+        this.destination = arguments[1];
     }
 
     public CommandE getEnum() {
