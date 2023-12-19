@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -81,19 +82,38 @@ public class DriveQuickstart {
         .setApplicationName(APPLICATION_NAME)
         .build();
 
+
+
+    List<File> files = new ArrayList<File>();
+    String pageToken = null;
+    do{
     // Print the names and IDs for up to 10 files.
-    FileList result = service.files().list()
-        .setPageSize(10)
-        .setFields("nextPageToken, files(id, name)")
-        .execute();
-    List<File> files = result.getFiles();
-    if (files == null || files.isEmpty()) {
-      System.out.println("No files found.");
-    } else {
-      System.out.println("Files:");
-      for (File file : files) {
-        System.out.printf("%s (%s)\n", file.getName(), file.getId());
+      FileList result = service.files().list()
+          .setQ("")
+          .setSpaces("drive")
+          .setFields("nextPageToken, files(id, name, parents)")
+          .setPageToken(pageToken)
+          .execute();
+      for(File file : result.getFiles()){
+        System.out.printf("Found file: %s, (%s)\n", file.getName(), (file.getParents() != null) ? file.getParents().get(0) : "null");
       }
-    }
+
+      files.addAll(result.getFiles());
+      pageToken = result.getNextPageToken();
+    } while (pageToken != null);
+
+
+
+    // if (files == null || files.isEmpty()) {
+    //   System.out.println("No files found.");
+    // } else {
+    //   System.out.println("Files:");
+    //   int i = 0;
+    //   for (File file : files) {
+    //     System.out.printf("%s, (%s)\n", file.getName(), file.getParents());
+    //     i+=1;
+    //   }
+    //   System.out.println(i);
+    // }
   }
 }

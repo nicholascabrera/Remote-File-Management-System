@@ -6,9 +6,8 @@ import java.awt.event.ActionEvent;
 /**
  * This is the main class.
  */
-public class Main {
-    public static void main( String[] args )
-    {
+public class testCommands {
+    public void testCommand(){
         //quick test code - this should be in its own test class so the main class has as few lines of code as possible.
         // in the future, the only lines of code that will be here are those which create and run the GUI.
         Invoker invoker = new Invoker();

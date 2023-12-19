@@ -1,6 +1,6 @@
 package drive.api.startech;
 
-class CommandFactory {  
+public class CommandFactory {  
     public Command createCommand(String commandName, String[] arguments) {
         //The createCommand method takes two parameters: commandName and arguments.
         // Mapping commandName to corresponding Command class

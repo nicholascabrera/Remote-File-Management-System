@@ -23,9 +23,9 @@ public class Invoker implements ActionListener{
          * with its the best we've got for now.
          */
         if(e.getActionCommand() == "copy"){
-            command = factory.getCommand(CommandE.COPY, new String[]{"source", "destination"});    
-        } else if(e.getActionCommand() == "paste"){
-            command = factory.getCommand(CommandE.PASTE, new String[]{"source", "destination"});
+            command = factory.getCommand(CommandE.COPY, new String[]{"source", "destination"});
+        } else if(e.getActionCommand() == "paste" && commandHistory.peek().getEnum() == CommandE.COPY){
+            command = factory.getCommand(CommandE.PASTE, new String[]{commandHistory.peek().getFileName(), "destination"});
         } else if(e.getActionCommand() == "create"){
             command = factory.getCommand(CommandE.CREATE, new String[]{"source"});
         } else if(e.getActionCommand() == "delete"){
@@ -69,5 +69,4 @@ public class Invoker implements ActionListener{
         Executor executor = new Executor(command);
         executor.execute();
     }
-    
 }
