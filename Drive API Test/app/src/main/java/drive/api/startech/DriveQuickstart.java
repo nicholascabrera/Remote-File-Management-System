@@ -93,7 +93,6 @@ public class DriveQuickstart {
     /**
      * I need to get all the folders in order to determine the root ID and so I know what I need to iterate through.
      */
-    System.out.println("Folders:");
     List<File> folders = new ArrayList<File>();
     String pageToken = null;
     do{
@@ -104,9 +103,6 @@ public class DriveQuickstart {
           .setFields("nextPageToken, files(id, name, parents, mimeType)")
           .setPageToken(pageToken)
           .execute();
-      for(File file : result.getFiles()){
-        System.out.printf("Found file: %s, (ID: %s), (PARENT ID: %s)\n", file.getName(), file.getId(), (file.getParents() != null) ? file.getParents().get(0) : "null");
-      }
 
       folders.addAll(result.getFiles());
       pageToken = result.getNextPageToken();
@@ -116,14 +112,21 @@ public class DriveQuickstart {
     if(rootID.equals("")){
       for(File folder : folders){
         //not needed at the moment
-        //TODO(PM) - Complete this algorithm for finding the root folder when there is more than one folder.
+        //DONE(PM) - Complete this algorithm for finding the root folder when there is more than one folder.
+        for(File file : folders){
+          if(folder.getParents().get(0) == file.getId()){
+            rootID = "";
+            break;
+          } else {
+            rootID = folder.getParents().get(0);
+          }
+        }
       }
     }
 
     /**
      * I need all the files, including the folders, so I can categorize everything.
      */
-    System.out.println("All Files:");
     List<File> files = new ArrayList<File>();
     pageToken = null;
     do{
@@ -134,9 +137,6 @@ public class DriveQuickstart {
           .setFields("nextPageToken, files(id, name, parents, mimeType)")
           .setPageToken(pageToken)
           .execute();
-      for(File file : result.getFiles()){
-        System.out.printf("Found file: %s, (ID: %s), (PARENT ID: %s)\n", file.getName(), file.getId(), (file.getParents() != null) ? file.getParents().get(0) : "null");
-      }
 
       files.addAll(result.getFiles());
       pageToken = result.getNextPageToken();
@@ -152,14 +152,13 @@ public class DriveQuickstart {
       if(folder.getParents().get(0) != null){
         String parentID = folder.getParents().get(0);
         if (parentID.equals(rootID)) {
-          rootFolder.addChild(new CommandPanel(folder, new ArrayList<CommandPanel>()));
-          System.out.printf("File added to root: %s\n", folder.getName());
+          rootFolder.addChild(new CommandPanel(folder, new ArrayList<CommandPanel>(), rootFolder));
         }
       }
     }
 
     for(File folder : folders){
-      CommandPanel currentFolder = new CommandPanel(folder, new ArrayList<CommandPanel>());
+      CommandPanel currentFolder = new CommandPanel(folder, new ArrayList<CommandPanel>(), rootFolder);
       for(CommandPanel panel : rootFolder.getChildPanels()){
         if(panel.getFile().getId().equals(folder.getId())){
           currentFolder.setChildPanels(panel.getChildPanels());
@@ -170,12 +169,10 @@ public class DriveQuickstart {
           String parentID = file.getParents().get(0);
           if (parentID.equals(rootID) && !rootFolder.containsChild(file.getId())) {
             //the parent folder of this file is the root.
-            rootFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>()));
-            System.out.printf("File added to root: %s\n", file.getName());
+            rootFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>(), rootFolder));
           } else if (parentID.equals(currentFolder.getFile().getId())) {
             //the parent folder of this file is the current folder.
-            currentFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>()));
-            System.out.printf("File added to %s: %s\n", folder.getName(), file.getName());
+            currentFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>(), currentFolder));
           } else {
             //the parent folder of this file is neither the root nor the current folder.
           }
@@ -184,7 +181,7 @@ public class DriveQuickstart {
     }
 
     /**
-     * TODO(PM) - link GUI to drive by passing the files and their child files/folders.
+     * DONE(PM) - link GUI to drive by passing the files and their child files/folders.
      */
     new CommandWindowDemo().createAndRunGUI(this.commandHistory, rootFolder);
 

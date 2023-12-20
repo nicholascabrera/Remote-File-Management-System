@@ -17,10 +17,12 @@ public class CommandPanel extends JFrame{
     // Attribute
     // Nested files (only if folder)
     //TEMP MIMETYPE
+    private CommandPanel parentPanel;
     private ArrayList<CommandPanel> childPanels;
     private File file;
 
-    public CommandPanel(File file, ArrayList<CommandPanel> childPanels){
+    public CommandPanel(File file, ArrayList<CommandPanel> childPanels, CommandPanel parentPanel){
+        this.parentPanel = parentPanel;
         this.childPanels = childPanels;
         this.file = file;
     }
@@ -80,6 +82,14 @@ public class CommandPanel extends JFrame{
         panel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         return panel;
+    }
+
+    public CommandPanel getParentPanel() {
+        return parentPanel;
+    }
+
+    public void setParentPanel(CommandPanel parentPanel) {
+        this.parentPanel = parentPanel;
     }
 
     public ArrayList<CommandPanel> getChildPanels() {
