@@ -14,11 +14,14 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.security.GeneralSecurityException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +51,10 @@ public class DriveQuickstart {
    * If modifying these scopes, delete your previously saved tokens/ folder.
    */
   private static final List<String> SCOPES =
-      Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY);
+      Collections.singletonList(DriveScopes.DRIVE);
   private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+  private static CommandWindow window;
 
   /**
    * Creates an authorized Credential object.
@@ -89,7 +94,14 @@ public class DriveQuickstart {
     Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
         .setApplicationName(APPLICATION_NAME)
         .build();
+    
+    /**
+     * DONE(PM) - link GUI to drive by passing the files and their child files/folders.
+     */
+    createAndRunGUI(service, commandHistory);
+  }
 
+  public static CommandPanel setupFileHierarchy(Drive service) throws IOException{
     /**
      * I need to get all the folders in order to determine the root ID and so I know what I need to iterate through.
      */
@@ -114,11 +126,13 @@ public class DriveQuickstart {
         //not needed at the moment
         //DONE(PM) - Complete this algorithm for finding the root folder when there is more than one folder.
         for(File file : folders){
-          if(folder.getParents().get(0) == file.getId()){
-            rootID = "";
-            break;
-          } else {
-            rootID = folder.getParents().get(0);
+          if(folder.getParents() != null){
+            if(folder.getParents().get(0) == file.getId()){
+              rootID = "";
+              break;
+            } else {
+              rootID = folder.getParents().get(0);
+            }
           }
         }
       }
@@ -142,37 +156,37 @@ public class DriveQuickstart {
       pageToken = result.getNextPageToken();
     } while (pageToken != null);
 
-    CommandPanel rootFolder = new CommandPanel();
-    rootFolder.buildRootPanel(new ArrayList<CommandPanel>());
+    CommandPanel rootFolder = new CommandPanel(service);
+    rootFolder.buildRootPanel(new ArrayList<CommandPanel>(), rootID);
 
     /**
      * add the folders with root folder as their parent to root folder's children list
      */
     for(File folder : folders){
-      if(folder.getParents().get(0) != null){
+      if(folder.getParents() != null){
         String parentID = folder.getParents().get(0);
         if (parentID.equals(rootID)) {
-          rootFolder.addChild(new CommandPanel(folder, new ArrayList<CommandPanel>(), rootFolder));
+          rootFolder.addChild(new CommandPanel(service, folder, new ArrayList<CommandPanel>(), rootFolder));
         }
       }
     }
 
     for(File folder : folders){
-      CommandPanel currentFolder = new CommandPanel(folder, new ArrayList<CommandPanel>(), rootFolder);
+      CommandPanel currentFolder = new CommandPanel(service, folder, new ArrayList<CommandPanel>(), rootFolder);
       for(CommandPanel panel : rootFolder.getChildPanels()){
         if(panel.getFile().getId().equals(folder.getId())){
           currentFolder.setChildPanels(panel.getChildPanels());
         }
       }
       for(File file : files){
-        if(file.getParents().get(0) != null){
+        if(file.getParents() != null){
           String parentID = file.getParents().get(0);
           if (parentID.equals(rootID) && !rootFolder.containsChild(file.getId())) {
             //the parent folder of this file is the root.
-            rootFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>(), rootFolder));
+            rootFolder.addChild(new CommandPanel(service, file, new ArrayList<CommandPanel>(), rootFolder));
           } else if (parentID.equals(currentFolder.getFile().getId())) {
             //the parent folder of this file is the current folder.
-            currentFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>(), currentFolder));
+            currentFolder.addChild(new CommandPanel(service, file, new ArrayList<CommandPanel>(), currentFolder));
           } else {
             //the parent folder of this file is neither the root nor the current folder.
           }
@@ -180,22 +194,27 @@ public class DriveQuickstart {
       }
     }
 
-    /**
-     * DONE(PM) - link GUI to drive by passing the files and their child files/folders.
-     */
-    new CommandWindowDemo().createAndRunGUI(this.commandHistory, rootFolder);
+    return rootFolder;
+  }
 
-    // if (files == null || files.isEmpty()) {
-    //   System.out.println("No files found.");
-    // } else {
-    //   System.out.println("Files:");
-    //   int i = 0;
-    //   for (File file : files) {
-    //     System.out.printf("%s, (%s)\n", file.getName(), file.getParents());
-    //     i+=1;
-    //   }
-    //   System.out.println(i);
-    // }
+  public static CommandWindow getOldWindow(){
+    return window;
+  }
+
+  public static void createAndRunGUI(Drive service, CommandHistory commandHistory) throws IOException{
+    window = new CommandWindow();
+    CommandPanel rootFolder = setupFileHierarchy(service);
+    window.setRootPanel(rootFolder);
+    window.setup(service, rootFolder, commandHistory);
+    window.execute();
+  }
+
+  public static void createAndRunGUI(Drive service, CommandHistory commandHistory, CommandWindow oldWindow) throws IOException{
+    window = oldWindow;
+    CommandPanel rootFolder = setupFileHierarchy(service);
+    window.setRootPanel(rootFolder);
+    window.setup(service, rootFolder, commandHistory);
+    window.execute();
   }
 
   public static void main(String... args) throws IOException, GeneralSecurityException {

@@ -10,11 +10,15 @@ import javax.swing.JOptionPane;
 public class Delete extends Command {
     private final CommandE commandEnum = CommandE.DELETE;
 
+    /**
+     * 
+     * @param arguments - 0 is the file ID to delete.
+     */
     public Delete(String[] arguments) { // Constructor to call the parent class constructor and initialize the fileName variable
         super(arguments[0]);
         if(arguments.length != 1){
             try {
-                throw new Exception("Not the correct number of arguments! Delete only takes one argument: the file name!");
+                throw new Exception("Not the correct number of arguments! Delete only takes one argument: the file ID!");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);

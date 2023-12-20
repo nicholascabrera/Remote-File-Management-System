@@ -3,10 +3,13 @@ package drive.api.startech;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.google.api.services.drive.Drive;
+
 public class EventHandler implements ActionListener {
 
     private CommandWindow oldWindow;
     private CommandPanel childPanel;
+    private Drive service;
 
     public EventHandler(){}
 
@@ -18,10 +21,14 @@ public class EventHandler implements ActionListener {
         this.childPanel = childPanel;
     }
 
+    public void setService(Drive service) {
+        this.service = service;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("open")) {
-            CommandWindow window = new CommandWindow(this.childPanel, new CommandHistory());
+            CommandWindow window = new CommandWindow(this.service, this.childPanel, new CommandHistory());
             window.execute();
             oldWindow.dispose();
         }

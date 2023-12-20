@@ -1,5 +1,6 @@
 package drive.api.startech;
 
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
 import java.awt.Color;
@@ -20,18 +21,30 @@ public class CommandPanel extends JFrame{
     private CommandPanel parentPanel;
     private ArrayList<CommandPanel> childPanels;
     private File file;
+    private String ID;
+    private Drive service;
 
-    public CommandPanel(File file, ArrayList<CommandPanel> childPanels, CommandPanel parentPanel){
+    public CommandPanel(Drive service, File file, ArrayList<CommandPanel> childPanels, CommandPanel parentPanel){
+        this.service = service;
         this.parentPanel = parentPanel;
         this.childPanels = childPanels;
         this.file = file;
+        this.ID = file.getId();
     }
 
-    public CommandPanel() {
+    public CommandPanel(Drive service, CommandPanel parentPanel, String ID) {
+        this.parentPanel = parentPanel;
+        this.service = service;
+        this.ID = ID;
     }
 
-    public void buildRootPanel(ArrayList<CommandPanel> childPanels){
+    public CommandPanel(Drive service) {
+        this.service = service;
+    }
+
+    public void buildRootPanel(ArrayList<CommandPanel> childPanels, String ID){
         this.childPanels = childPanels;
+        this.ID = ID;
     }
     
     public JPanel buildPanel(File file, EventHandler handler, CommandHistory commandHistory) {
@@ -65,7 +78,7 @@ public class CommandPanel extends JFrame{
             // Create panel elements
             String[] dropdownOptions = {"Open", "Copy", "Move", "Delete"};
             dropdownBox = new JComboBox<>(dropdownOptions);
-            Invoker invoker = new Invoker(commandHistory, dropdownBox);
+            Invoker invoker = new Invoker(service, commandHistory, dropdownBox, this);
             submitButton = new JButton("SUBMIT");
             submitButton.addActionListener(invoker);
             submitButton.setActionCommand("submit");
@@ -82,6 +95,10 @@ public class CommandPanel extends JFrame{
         panel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         return panel;
+    }
+
+    public String getID() {
+        return ID;
     }
 
     public CommandPanel getParentPanel() {
@@ -117,59 +134,6 @@ public class CommandPanel extends JFrame{
         this.childPanels.add(childPanel);
     }
 
-    // Build panel for file parameter
-                // TEMP MIMETYPE
-    public JPanel buildPanel(String FILE_DESCRIPTION, String MIMETYPE, String FILENAME, EventHandler handler, CommandHistory commandHistory) {
-        // Attributes
-        final int PANEL_WIDTH = 400;
-        final int PANEL_HEIGHT = 40;
-        JLabel fileName;
-        JComboBox<String> dropdownBox;
-        JButton submitButton;
-        JButton openFolder;
-        JPanel panel;
-
-
-        //GET FILE DETAILS FROM API
-        // mimetype
-        // file name
-
-        panel = new JPanel();
-        fileName = new JLabel(FILENAME);
-
-        if (MIMETYPE == "folder") {
-            openFolder = new JButton("OPEN");
-            openFolder.addActionListener(handler);
-            openFolder.setActionCommand("open");
-
-            panel.add(fileName);
-            panel.add(openFolder);
-        }
-
-
-        else {
-            // Create panel elements
-            String[] dropdownOptions = {"Open", "Copy", "Move", "Delete"};
-            dropdownBox = new JComboBox<>(dropdownOptions);
-            Invoker invoker = new Invoker(commandHistory, dropdownBox);
-            submitButton = new JButton("SUBMIT");
-            submitButton.addActionListener(invoker);
-            submitButton.setActionCommand("submit");
-            /**
-             * TOD(PM) - Link the submit button with the invoker. (Completed 12/19/23 @ 19:36)
-             */
-
-            // add elements to panel
-            panel.add(fileName);
-            panel.add(dropdownBox);
-            panel.add(submitButton);
-        }
-        panel.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-
-        return panel;
-    }
-
     public JPanel buildNewFile(CommandHistory commandHistory) {
         // Attributes
         // final int PANEL_WIDTH = 400;
@@ -181,10 +145,10 @@ public class CommandPanel extends JFrame{
 
         // create panel elements
         panel = new JPanel();
-        newFileLabel = new JLabel("Create new file. Select file type.");
-        String[] dropdownOptions = {"Doc", "Ppt", "xls", "folder"};
+        newFileLabel = new JLabel("Create new item. Select item type.");
+        String[] dropdownOptions = {"File", "Folder"};
         dropdownFileType = new JComboBox<>(dropdownOptions);
-        Invoker invoker = new Invoker(commandHistory);
+        Invoker invoker = new Invoker(service, commandHistory, dropdownFileType, this);
         submitButton = new JButton("SUBMIT");
         submitButton.addActionListener(invoker);
         submitButton.setActionCommand("submit");
