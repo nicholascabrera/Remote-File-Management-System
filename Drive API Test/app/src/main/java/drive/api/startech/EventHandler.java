@@ -1,29 +1,29 @@
 package drive.api.startech;
 
-import javax.swing.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.util.ArrayList;
-
 public class EventHandler implements ActionListener {
 
-    CommandWindow oldWindow;
+    private CommandWindow oldWindow;
+    private CommandPanel childPanel;
 
-    public EventHandler(){
+    public EventHandler(){}
 
+    public void setCommandWindow(CommandWindow oldWindow){
+        this.oldWindow = oldWindow;
     }
 
-    public EventHandler(CommandWindow oldWindow){
-        this.oldWindow = oldWindow;
+    public void setChildPanel(CommandPanel childPanel){
+        this.childPanel = childPanel;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("open")) {
+            CommandWindow window = new CommandWindow(this.childPanel, new CommandHistory());
+            window.execute();
             oldWindow.dispose();
-            new CommandWindow(new ArrayList<JPanel>());
         }
     }
 }

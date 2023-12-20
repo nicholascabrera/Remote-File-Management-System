@@ -26,6 +26,11 @@ import java.util.List;
 /* class to demonstrate use of Drive files list API */
 public class DriveQuickstart {
   /**
+   * CommandHistory Instance.
+   */
+  public CommandHistory commandHistory;
+
+  /**
    * Application name.
    */
   private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
@@ -75,34 +80,113 @@ public class DriveQuickstart {
     return credential;
   }
 
-  public static void main(String... args) throws IOException, GeneralSecurityException {
+  public void driveStart() throws IOException, GeneralSecurityException{
+    // instantiate the invoker.
+    this.commandHistory = new CommandHistory();
+
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
         .setApplicationName(APPLICATION_NAME)
         .build();
 
-
-
-    List<File> files = new ArrayList<File>();
+    /**
+     * I need to get all the folders in order to determine the root ID and so I know what I need to iterate through.
+     */
+    System.out.println("Folders:");
+    List<File> folders = new ArrayList<File>();
     String pageToken = null;
     do{
-    // Print the names and IDs for up to 10 files.
+    // pulls the names, IDs, and parent folders for all files and folders.
       FileList result = service.files().list()
-          .setQ("")
+          .setQ("mimeType = 'application/vnd.google-apps.folder'")
           .setSpaces("drive")
-          .setFields("nextPageToken, files(id, name, parents)")
+          .setFields("nextPageToken, files(id, name, parents, mimeType)")
           .setPageToken(pageToken)
           .execute();
       for(File file : result.getFiles()){
-        System.out.printf("Found file: %s, (%s)\n", file.getName(), (file.getParents() != null) ? file.getParents().get(0) : "null");
+        System.out.printf("Found file: %s, (ID: %s), (PARENT ID: %s)\n", file.getName(), file.getId(), (file.getParents() != null) ? file.getParents().get(0) : "null");
+      }
+
+      folders.addAll(result.getFiles());
+      pageToken = result.getNextPageToken();
+    } while (pageToken != null);
+    
+    String rootID = (folders.size() == 1) ? folders.get(0).getParents().get(0) : "";
+    if(rootID.equals("")){
+      for(File folder : folders){
+        //not needed at the moment
+        //TODO(PM) - Complete this algorithm for finding the root folder when there is more than one folder.
+      }
+    }
+
+    /**
+     * I need all the files, including the folders, so I can categorize everything.
+     */
+    System.out.println("All Files:");
+    List<File> files = new ArrayList<File>();
+    pageToken = null;
+    do{
+    // pulls the names, IDs, and parent folders for all files and folders.
+      FileList result = service.files().list()
+          .setQ("")
+          .setSpaces("drive")
+          .setFields("nextPageToken, files(id, name, parents, mimeType)")
+          .setPageToken(pageToken)
+          .execute();
+      for(File file : result.getFiles()){
+        System.out.printf("Found file: %s, (ID: %s), (PARENT ID: %s)\n", file.getName(), file.getId(), (file.getParents() != null) ? file.getParents().get(0) : "null");
       }
 
       files.addAll(result.getFiles());
       pageToken = result.getNextPageToken();
     } while (pageToken != null);
 
+    CommandPanel rootFolder = new CommandPanel();
+    rootFolder.buildRootPanel(new ArrayList<CommandPanel>());
 
+    /**
+     * add the folders with root folder as their parent to root folder's children list
+     */
+    for(File folder : folders){
+      if(folder.getParents().get(0) != null){
+        String parentID = folder.getParents().get(0);
+        if (parentID.equals(rootID)) {
+          rootFolder.addChild(new CommandPanel(folder, new ArrayList<CommandPanel>()));
+          System.out.printf("File added to root: %s\n", folder.getName());
+        }
+      }
+    }
+
+    for(File folder : folders){
+      CommandPanel currentFolder = new CommandPanel(folder, new ArrayList<CommandPanel>());
+      for(CommandPanel panel : rootFolder.getChildPanels()){
+        if(panel.getFile().getId().equals(folder.getId())){
+          currentFolder.setChildPanels(panel.getChildPanels());
+        }
+      }
+      for(File file : files){
+        if(file.getParents().get(0) != null){
+          String parentID = file.getParents().get(0);
+          if (parentID.equals(rootID) && !rootFolder.containsChild(file.getId())) {
+            //the parent folder of this file is the root.
+            rootFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>()));
+            System.out.printf("File added to root: %s\n", file.getName());
+          } else if (parentID.equals(currentFolder.getFile().getId())) {
+            //the parent folder of this file is the current folder.
+            currentFolder.addChild(new CommandPanel(file, new ArrayList<CommandPanel>()));
+            System.out.printf("File added to %s: %s\n", folder.getName(), file.getName());
+          } else {
+            //the parent folder of this file is neither the root nor the current folder.
+          }
+        }
+      }
+    }
+
+    /**
+     * TODO(PM) - link GUI to drive by passing the files and their child files/folders.
+     */
+    new CommandWindowDemo().createAndRunGUI(this.commandHistory, rootFolder);
 
     // if (files == null || files.isEmpty()) {
     //   System.out.println("No files found.");
@@ -115,5 +199,9 @@ public class DriveQuickstart {
     //   }
     //   System.out.println(i);
     // }
+  }
+
+  public static void main(String... args) throws IOException, GeneralSecurityException {
+    new DriveQuickstart().driveStart();
   }
 }
