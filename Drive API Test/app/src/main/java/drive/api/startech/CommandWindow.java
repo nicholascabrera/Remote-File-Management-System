@@ -14,6 +14,9 @@ public class CommandWindow extends JFrame {
     private static JPanel mainPanel;
     private static JPanel textPanel;
 
+    private static Boolean pasteState = false;
+    private static Boolean moveState = false;
+
     public CommandWindow(Drive service, CommandPanel rootPanel, CommandHistory commandHistory){
         setup(service, rootPanel, commandHistory);
     }
@@ -24,6 +27,14 @@ public class CommandWindow extends JFrame {
     }
 
     public CommandWindow() {}
+
+    public static void setPasteState(Boolean pasteState) {
+        CommandWindow.pasteState = pasteState;
+    }
+
+    public static void setMoveState(Boolean moveState) {
+        CommandWindow.moveState = moveState;
+    }
 
     public void setRootPanel(CommandPanel rootPanel) {
         this.rootPanel = rootPanel;
@@ -70,15 +81,26 @@ public class CommandWindow extends JFrame {
         textPanel = new JPanel();
         JButton back = new JButton("Back");
         back.setActionCommand("back");
+        JButton paste = new JButton("Paste");
+        paste.setActionCommand("paste");
+        JButton move = new JButton("Move");
+        move.setActionCommand("move");
+        textPanel.add(move);
         textPanel.add(back);
+        textPanel.add(paste);
         textPanel.setBounds(0, 425, WINDOW_WIDTH, 75);
 
         if(this.rootPanel.getParentPanel() == null){
             back.setEnabled(false);
         }
+        
+        paste.setEnabled(CommandWindow.pasteState);
+        move.setEnabled(CommandWindow.moveState);
 
         NavigationEventHandler nHandler = new NavigationEventHandler(service, this, this.rootPanel);
         back.addActionListener(nHandler);
+        paste.addActionListener(nHandler);
+        move.addActionListener(nHandler);
 
         for (int i=0; i<panelArrayList.size(); i++) {
             mainPanel.add(panelArrayList.get(i));
