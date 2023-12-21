@@ -15,6 +15,8 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import javax.swing.UIManager;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -202,6 +204,12 @@ public class DriveQuickstart {
   }
 
   public static void createAndRunGUI(Drive service, CommandHistory commandHistory) throws IOException{
+    try { 
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     window = new CommandWindow();
     CommandPanel rootFolder = setupFileHierarchy(service);
     window.setRootPanel(rootFolder);
