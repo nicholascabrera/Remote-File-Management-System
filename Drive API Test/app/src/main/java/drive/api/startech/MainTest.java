@@ -21,7 +21,15 @@
 //         } catch (IOException e) {
 //             assertTrue(e.getMessage().contains("No such file or directory"));
 //         }
-//     }@Test
+//     }
+    
+//     private void assertTrue(boolean contains) {
+//     }
+
+//     private void fail(String string) {
+//     }
+
+//     @Test
 //     public void testCreateFileWithSpecialCharacterInName(){
 //         try{
 
