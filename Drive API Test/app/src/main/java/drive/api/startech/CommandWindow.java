@@ -14,7 +14,6 @@ public class CommandWindow extends JFrame {
     private static JPanel mainPanel;
     private static JPanel textPanel;
 
-    private static Boolean pasteState = false;
     private static Boolean moveState = false;
 
     public CommandWindow(Drive service, CommandPanel rootPanel, CommandHistory commandHistory){
@@ -27,10 +26,6 @@ public class CommandWindow extends JFrame {
     }
 
     public CommandWindow() {}
-
-    public static void setPasteState(Boolean pasteState) {
-        CommandWindow.pasteState = pasteState;
-    }
 
     public static void setMoveState(Boolean moveState) {
         CommandWindow.moveState = moveState;
@@ -45,7 +40,7 @@ public class CommandWindow extends JFrame {
         ArrayList<JPanel> panels = new ArrayList<>();
 
         for(CommandPanel childPanel : rootPanel.getChildPanels()){
-            EventHandler handler = new EventHandler();
+            EventHandler handler = new EventHandler(commandHistory);
             handler.setCommandWindow(this);
             handler.setChildPanel(childPanel);
             handler.setService(service);
@@ -93,11 +88,17 @@ public class CommandWindow extends JFrame {
         if(this.rootPanel.getParentPanel() == null){
             back.setEnabled(false);
         }
-        
-        paste.setEnabled(CommandWindow.pasteState);
+
+        if(!commandHistory.isEmpty() && commandHistory.peek().getEnum() == CommandE.COPY){
+            paste.setEnabled(true);
+        } else if(!commandHistory.isEmpty() && commandHistory.peek().getEnum() != CommandE.COPY) {
+            paste.setEnabled(false);
+        } else if(commandHistory.isEmpty()){
+            paste.setEnabled(false);
+        }
         move.setEnabled(CommandWindow.moveState);
 
-        NavigationEventHandler nHandler = new NavigationEventHandler(service, this, this.rootPanel);
+        NavigationEventHandler nHandler = new NavigationEventHandler(service, this, this.rootPanel, commandHistory);
         back.addActionListener(nHandler);
         paste.addActionListener(nHandler);
         move.addActionListener(nHandler);

@@ -26,6 +26,7 @@ public class Executor {
                 }
                 break;
             case COPY:
+                System.out.println("Copied file: " + command.getFileName());
                 break;
             case DELETE:
                 try {

@@ -9,9 +9,13 @@ public class EventHandler implements ActionListener {
 
     private CommandWindow oldWindow;
     private CommandPanel childPanel;
+    private CommandHistory commandHistory;
+
     private Drive service;
 
-    public EventHandler(){}
+    public EventHandler(CommandHistory commandHistory){
+        this.commandHistory = commandHistory;
+    }
 
     public void setCommandWindow(CommandWindow oldWindow){
         this.oldWindow = oldWindow;
@@ -28,7 +32,7 @@ public class EventHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("open")) {
-            CommandWindow window = new CommandWindow(this.service, this.childPanel, new CommandHistory());
+            CommandWindow window = new CommandWindow(this.service, this.childPanel, this.commandHistory);
             window.execute();
             oldWindow.dispose();
         }

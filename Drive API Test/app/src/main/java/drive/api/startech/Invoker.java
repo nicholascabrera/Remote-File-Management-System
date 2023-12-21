@@ -16,11 +16,6 @@ public class Invoker implements ActionListener{
     private CommandPanel currentFolder;
     private Drive service;
 
-    public Invoker(){
-        factory = new CommandFactory();
-        commandHistory = new CommandHistory();
-    }
-
     public Invoker(CommandHistory commandHistory){
         factory = new CommandFactory();
         this.commandHistory = commandHistory;
@@ -45,7 +40,7 @@ public class Invoker implements ActionListener{
         if(e.getActionCommand() == "submit"){
             String selectedItem = (this.dropDownBox.getSelectedItem().equals("File") || this.dropDownBox.getSelectedItem().equals("Folder")) ? "create" : ((String)this.dropDownBox.getSelectedItem()).toLowerCase();
             if(selectedItem.equals("copy")){
-                command = factory.getCommand(CommandE.COPY, new String[]{"source", "destination"}, currentFolder);
+                command = factory.getCommand(CommandE.COPY, new String[]{currentFolder.getFile().getName()}, currentFolder);
 
             } else if(selectedItem.equals("paste") && commandHistory.peek().getEnum() == CommandE.COPY){
                 command = factory.getCommand(CommandE.PASTE, new String[]{commandHistory.peek().getFileName(), "destination"}, currentFolder);
