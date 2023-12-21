@@ -3,11 +3,10 @@ package drive.api.startech;
 public class CommandFactory { 
 
     public Command createCommand(CommandE commandEnum, String[] arguments, CommandPanel currentPanel) {
-        //The createCommand method takes two parameters: commandName and arguments.
+        //The createCommand method takes three parameters: commandName, arguments, and the current panel.
         // Mapping commandName to corresponding Command class
         switch (commandEnum) { /*switch statement is used to determine the appropriate subclass of the Command interface 
-                                            based on the commandName parameter. The commandName is converted to lowercase using
-                                            commandName.toLowerCase() in order to handle case-insensitive matching.*/
+                                            based on the Command Name parameter.*/
             case CREATE:
                 System.out.println("CREATE COMMAND EXECUTED");
                 return new Create(arguments, currentPanel.getParentPanel());  // Creating Create command
@@ -15,8 +14,8 @@ public class CommandFactory {
                 System.out.println("COPY COMMAND EXECUTED");
                 return new Copy(arguments, currentPanel);  // Creating Copy command
             case MOVE_COPY:
-                System.out.println("COPY COMMAND EXECUTED");
-                return new MoveCopy(arguments, currentPanel);  // Creating Copy command
+                System.out.println("MOVE COPY COMMAND EXECUTED");
+                return new MoveCopy(arguments, currentPanel);  // Creating Move-Copy command
             case DELETE:
                 System.out.println("DELETE COMMAND EXECUTED");
                 return new Delete(arguments);  // Creating Delete command

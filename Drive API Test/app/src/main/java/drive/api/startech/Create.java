@@ -12,13 +12,16 @@ public class Create extends Command {
     private CommandPanel folder;
 
     /**
-     * 
-     * @param arguments - 0 is the fileName, 1 is the mimeType, 2 is the folder
+     * The Create Command Object stores the meta data of a file and the place where said file should be created.
+     * @param arguments - 0 is the fileName, 1 is the mimeType, 2 is the folder.
+     * @param folder - the folder where the file should be created.
      */
     public Create(String[] arguments, CommandPanel folder) { // Constructor to call the parent class constructor and initialize the fileName variable
         super(arguments[0]);    //the first element of the arguments array will be the fileName.
-        this.mimeType = arguments[1];
-        this.folder = folder;
+        this.mimeType = arguments[1];   //the second element of the arguments array is the mimeType, or google drive's attribute type (ie. file or folder)
+        this.folder = folder;           // the last parameter is the folder the create command is being called in.
+
+        //check to see if there are too many or not enough arguments.
         if(arguments.length != 2){
             try {
                 throw new Exception("Not the correct number of arguments! Create only takes two arguments: the file name and the mimeType!");
