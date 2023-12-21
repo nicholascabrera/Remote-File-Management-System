@@ -16,7 +16,7 @@ public class Paste extends Command {
         super(arguments[0]);
         if(arguments.length != 2){
             try {
-                throw new Exception("Not the correct number of arguments! Paste takes two arguments: the source file name and the destination!");
+                throw new Exception("Not the correct number of arguments! Paste takes two arguments: the source file id and the destination file id!");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);

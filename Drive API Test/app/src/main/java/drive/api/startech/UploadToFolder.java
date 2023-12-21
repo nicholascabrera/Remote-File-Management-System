@@ -62,16 +62,31 @@ public class UploadToFolder {
      * @return The pasted file metadata if successful; otherwise, null.
      * @throws IOException if service account credentials file not found.
      */
-    public static void pasteFileToFolder(Drive driveService, File fileToPaste, String destinationFolderId)
+    public static void pasteFileToFolder(Drive driveService, String fileId, String destinationFolderId)
             throws IOException {
         try {
-            // Create a new copy with the destination folder as the parent
-            fileToPaste.setParents(Collections.singletonList(destinationFolderId));
-            File pastedFile = driveService.files().copy(fileToPaste.getId(), fileToPaste)
+            File pastedFile = driveService.files().copy(fileId, null)
                     .setFields("id, parents")
                     .execute();
 
-            System.out.println("Pasted File ID: " + pastedFile.getId());
+            // Retrieve the existing parents to remove
+            File file = driveService.files().get(pastedFile.getId())
+                    .setFields("parents")
+                    .execute();
+            StringBuilder previousParents = new StringBuilder();
+            for (String parent : file.getParents()) {
+                previousParents.append(parent);
+                previousParents.append(',');
+            }
+
+            // Move the file to the new folder
+            file = driveService.files().update(pastedFile.getId(), null)
+                .setAddParents(destinationFolderId)
+                .setRemoveParents(previousParents.toString())
+                .setFields("id, parents")
+                .execute();
+
+            System.out.println("Pasted File ID: " + file.getId());
         } catch (GoogleJsonResponseException e) {
             System.err.println("Unable to paste file: " + e.getDetails());
             throw e;
@@ -90,19 +105,26 @@ public class UploadToFolder {
     public static void moveFileToFolder(Drive driveService, String fileId, String destinationFolderId)
             throws IOException {
         try {
-            File fileToMove = driveService.files().get(fileId)
-                    .setFields("id, parents")
-                    .execute();
+            // Retrieve the existing parents to remove
+            File file = driveService.files().get(fileId)
+                .setFields("parents")
+                .execute();
+           
+            StringBuilder previousParents = new StringBuilder();
+            
+            for (String parent : file.getParents()) {
+                previousParents.append(parent);
+                previousParents.append(',');
+            }
 
-            String originalParents = fileToMove.getParents().get(0);
-            fileToMove.setParents(Collections.singletonList(destinationFolderId));
-            fileToMove = driveService.files().update(fileToMove.getId(), null)
-                    .setAddParents(destinationFolderId)
-                    .setRemoveParents(originalParents)
-                    .setFields("id, parents")
-                    .execute();
+            // Move the file to the new folder
+            file = driveService.files().update(fileId, null)
+                .setAddParents(destinationFolderId)
+                .setRemoveParents(previousParents.toString())
+                .setFields("id, parents")
+                .execute();
 
-            System.out.println("Moved File ID: " + fileToMove.getId());
+            System.out.println("Moved File ID: " + file.getId());
         } catch (GoogleJsonResponseException e) {
             System.err.println("Unable to move file: " + e.getDetails());
             throw e;

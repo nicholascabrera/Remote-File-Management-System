@@ -7,15 +7,15 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 // Child class representing the Copy operation
-public class Copy extends Command {
-    private final CommandE commandEnum = CommandE.COPY;
+public class MoveCopy extends Command {
+    private final CommandE commandEnum = CommandE.MOVE_COPY;
     private File file;
 
     /**
      * 
      * @param arguments - 0 is the file id.
      */
-    public Copy(String[] arguments, CommandPanel file) { // Constructor to call the parent class constructor and initialize the source and destination variables
+    public MoveCopy(String[] arguments, CommandPanel file) { // Constructor to call the parent class constructor and initialize the source and destination variables
         super(arguments[0]);
         this.file = file.getFile();
         if(arguments.length != 1){

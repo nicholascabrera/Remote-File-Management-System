@@ -37,11 +37,23 @@ public class Executor {
                 }
                 break;
             case MOVE:
+                try {
+                    UploadToFolder.moveFileToFolder(service, command.getFileName(), ((Move)command).getDestination());
+                    CommandWindow.refresh(service);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                }
                 break;
             case NULL:
                 //does nothing.
                 break;
             case PASTE:
+                try {
+                    UploadToFolder.pasteFileToFolder(service, command.getFileName(), ((Paste)command).getDestination());
+                    CommandWindow.refresh(service);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                }
                 break;
             case UNDO:
                 //will not be implemented.

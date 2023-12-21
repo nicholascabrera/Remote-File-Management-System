@@ -16,9 +16,11 @@ public class Invoker implements ActionListener{
     private CommandPanel currentFolder;
     private Drive service;
 
-    public Invoker(CommandHistory commandHistory){
+    public Invoker(Drive service, CommandHistory commandHistory, CommandPanel currentFolder){
         factory = new CommandFactory();
+        this.service = service;
         this.commandHistory = commandHistory;
+        this.currentFolder = currentFolder;
     }
 
     public Invoker(Drive service, CommandHistory commandHistory, JComboBox<String> dropDownBox, CommandPanel currentFolder){
@@ -40,10 +42,7 @@ public class Invoker implements ActionListener{
         if(e.getActionCommand() == "submit"){
             String selectedItem = (this.dropDownBox.getSelectedItem().equals("File") || this.dropDownBox.getSelectedItem().equals("Folder")) ? "create" : ((String)this.dropDownBox.getSelectedItem()).toLowerCase();
             if(selectedItem.equals("copy")){
-                command = factory.getCommand(CommandE.COPY, new String[]{currentFolder.getFile().getName()}, currentFolder);
-
-            } else if(selectedItem.equals("paste") && commandHistory.peek().getEnum() == CommandE.COPY){
-                command = factory.getCommand(CommandE.PASTE, new String[]{commandHistory.peek().getFileName(), "destination"}, currentFolder);
+                command = factory.getCommand(CommandE.COPY, new String[]{currentFolder.getFile().getId()}, currentFolder);
 
             } else if(selectedItem.equals("create")){
                 String fileName = JOptionPane.showInputDialog(String.format("Please enter a name for your new %s.", this.dropDownBox.getSelectedItem()));
@@ -62,7 +61,7 @@ public class Invoker implements ActionListener{
                 command = factory.getCommand(CommandE.DELETE, new String[]{currentFolder.getFile().getId()}, currentFolder);
 
             } else if(selectedItem.equals("move")){
-                command = factory.getCommand(CommandE.MOVE, new String[]{"source", "destination"}, currentFolder);
+                command = factory.getCommand(CommandE.MOVE_COPY, new String[]{currentFolder.getFile().getId()}, currentFolder);
 
             } else if(selectedItem.equals("undo") && commandHistory.size() > 0){
                 Command lastCommand = commandHistory.pop();
@@ -96,6 +95,13 @@ public class Invoker implements ActionListener{
                 System.out.println("There are no commands to undo!");
                 return;
             }
+
+        } else if(e.getActionCommand().equals("paste") && commandHistory.peek().getEnum() == CommandE.COPY){
+            command = factory.getCommand(CommandE.PASTE, new String[]{commandHistory.peek().getFileName(), currentFolder.getID()}, currentFolder);
+
+        } else if(e.getActionCommand().equals("move") && commandHistory.peek().getEnum() == CommandE.MOVE_COPY){
+            command = factory.getCommand(CommandE.MOVE, new String[]{commandHistory.peek().getFileName(), currentFolder.getID()}, currentFolder);
+
         }
 
         if(e.getActionCommand() != "undo"){commandHistory.add(command);}

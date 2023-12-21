@@ -14,6 +14,9 @@ public class CommandFactory {
             case COPY:
                 System.out.println("COPY COMMAND EXECUTED");
                 return new Copy(arguments, currentPanel);  // Creating Copy command
+            case MOVE_COPY:
+                System.out.println("COPY COMMAND EXECUTED");
+                return new MoveCopy(arguments, currentPanel);  // Creating Copy command
             case DELETE:
                 System.out.println("DELETE COMMAND EXECUTED");
                 return new Delete(arguments);  // Creating Delete command
