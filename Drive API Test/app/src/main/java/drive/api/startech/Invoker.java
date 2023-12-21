@@ -32,14 +32,10 @@ public class Invoker implements ActionListener{
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent event) {
         Command command = new Command("Untitled");
 
-        /*
-         * all the arguments are made up, since we don't have a gui to work
-         * with its the best we've got for now.
-         */
-        if(e.getActionCommand() == "submit"){
+        if(event.getActionCommand() == "submit"){
             String selectedItem = (this.dropDownBox.getSelectedItem().equals("File") || this.dropDownBox.getSelectedItem().equals("Folder")) ? "create" : ((String)this.dropDownBox.getSelectedItem()).toLowerCase();
             if(selectedItem.equals("copy")){
                 command = factory.getCommand(CommandE.COPY, new String[]{currentFolder.getFile().getId()}, currentFolder);
@@ -96,15 +92,15 @@ public class Invoker implements ActionListener{
                 return;
             }
 
-        } else if(e.getActionCommand().equals("paste") && commandHistory.peek().getEnum() == CommandE.COPY){
+        } else if(event.getActionCommand().equals("paste") && commandHistory.peek().getEnum() == CommandE.COPY){
             command = factory.getCommand(CommandE.PASTE, new String[]{commandHistory.peek().getFileName(), currentFolder.getID()}, currentFolder);
 
-        } else if(e.getActionCommand().equals("move") && commandHistory.peek().getEnum() == CommandE.MOVE_COPY){
+        } else if(event.getActionCommand().equals("move") && commandHistory.peek().getEnum() == CommandE.MOVE_COPY){
             command = factory.getCommand(CommandE.MOVE, new String[]{commandHistory.peek().getFileName(), currentFolder.getID()}, currentFolder);
 
         }
 
-        if(e.getActionCommand() != "undo"){commandHistory.add(command);}
+        if(event.getActionCommand() != "undo"){commandHistory.add(command);}
         Executor executor = new Executor(service, command);
         executor.execute();
     }
