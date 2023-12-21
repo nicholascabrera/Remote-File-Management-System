@@ -2,9 +2,13 @@ package drive.api.startech;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import java.io.IOException;
-import java.util.Collections;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
+import java.util.Collections;
 
 public class UploadToFolder {
     /**
@@ -130,4 +134,25 @@ public class UploadToFolder {
             throw e;
         }
     }
+
+    /**
+     * Download a Document file in PDF format.
+     *
+     * @param realFileId file ID of any workspace document format file.
+     * @return byte array stream if successful, {@code null} otherwise.
+     * @throws IOException if service account credentials file not found.
+     */
+    public static ByteArrayOutputStream exportPdf(Drive service, String realFileId) throws IOException {
+        OutputStream outputStream = new ByteArrayOutputStream();
+
+        try {
+            service.files().export(realFileId, "application/pdf")
+                    .executeMediaAndDownloadTo(outputStream);
+
+            return (ByteArrayOutputStream) outputStream;
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Unable to export file: " + e.getDetails());
+            throw e;
+        }
+  }
 }

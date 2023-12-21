@@ -1,6 +1,9 @@
 package drive.api.startech;
 
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 
 import com.google.api.services.drive.Drive;
 
@@ -50,6 +53,18 @@ public class Executor {
             case PASTE:
                 try {
                     UploadToFolder.pasteFileToFolder(service, command.getFileName(), ((Paste)command).getDestination());
+                    CommandWindow.refresh(service);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                }
+                break;
+            case OPEN:
+                try {
+                    ByteArrayOutputStream byteArrayOutputStream = UploadToFolder.exportPdf(service, command.getFileName());
+                    try (OutputStream outputStream = new FileOutputStream(((Open)command).getFile().getFile().getName())) {
+                        byteArrayOutputStream.writeTo(outputStream);
+                    }
+
                     CommandWindow.refresh(service);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);

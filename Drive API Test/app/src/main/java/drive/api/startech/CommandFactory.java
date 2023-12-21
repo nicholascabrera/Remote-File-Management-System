@@ -25,6 +25,9 @@ public class CommandFactory {
             case MOVE:
                 System.out.println("MOVE COMMAND EXECUTED");
                 return new Move(arguments);  // Creating Move command
+            case OPEN:
+                System.out.println("OPEN COMMAND EXECUTED");
+                return new Open(arguments, currentPanel); // Creating Open Command
             default:
                 throw new IllegalArgumentException("Unknown command.");
                 /*If the commandName doesn't match any of the specific cases, an IllegalArgumentException is thrown 

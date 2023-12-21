@@ -59,6 +59,9 @@ public class Invoker implements ActionListener{
             } else if(selectedItem.equals("move")){
                 command = factory.getCommand(CommandE.MOVE_COPY, new String[]{currentFolder.getFile().getId()}, currentFolder);
 
+            } else if(selectedItem.equals("open")){
+                command = factory.getCommand(CommandE.OPEN, new String[]{currentFolder.getFile().getId()}, currentFolder);
+
             } else if(selectedItem.equals("undo") && commandHistory.size() > 0){
                 Command lastCommand = commandHistory.pop();
                 switch(lastCommand.getEnum()){
